@@ -1,0 +1,310 @@
+-- Script Anti AFK + Auto Jump - Theme c00lkidd Cyberpunk
+-- Tối ưu hóa giao diện, hiệu ứng neon, kéo thả mượt
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+
+-- === XÓA GUI CŨ ===
+for _, gui in ipairs(LocalPlayer.PlayerGui:GetChildren()) do
+    if gui.Name == "c00lkidd_AFK" then gui:Destroy() end
+end
+
+-- === TẠO GUI ===
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "c00lkidd_AFK"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-- === MAIN FRAME (Nền đen xanh) ===
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 320, 0, 220)
+MainFrame.Position = UDim2.new(0.5, -160, 0.4, -110)
+MainFrame.BackgroundColor3 = Color3.fromRGB(8, 12, 25)
+MainFrame.BackgroundTransparency = 0.15
+MainFrame.BorderSizePixel = 2
+MainFrame.BorderColor3 = Color3.fromRGB(0, 255, 200)
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.ClipsDescendants = true
+MainFrame.Parent = ScreenGui
+
+-- Bo góc + viền neon
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 12)
+Corner.Parent = MainFrame
+
+local GlowBorder = Instance.new("Frame")
+GlowBorder.Size = UDim2.new(1, 6, 1, 6)
+GlowBorder.Position = UDim2.new(0, -3, 0, -3)
+GlowBorder.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
+GlowBorder.BackgroundTransparency = 0.8
+GlowBorder.BorderSizePixel = 0
+GlowBorder.ZIndex = 0
+GlowBorder.Parent = MainFrame
+
+local CornerGlow = Instance.new("UICorner")
+CornerGlow.CornerRadius = UDim.new(0, 14)
+CornerGlow.Parent = GlowBorder
+
+-- === HEADER (Có hiệu ứng gradient) ===
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 45)
+Header.BackgroundColor3 = Color3.fromRGB(0, 200, 150)
+Header.BackgroundTransparency = 0.2
+Header.Parent = MainFrame
+
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -70, 1, 0)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "⚡ C00LKIDD AFK ⚡"
+Title.TextColor3 = Color3.fromRGB(0, 255, 220)
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Font = Enum.Font.GothamBold
+Title.TextScaled = true
+Title.Parent = Header
+
+-- Nút đóng (X)
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 30, 1, 0)
+CloseBtn.Position = UDim2.new(1, -30, 0, 0)
+CloseBtn.BackgroundTransparency = 1
+CloseBtn.Text = "✕"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
+CloseBtn.TextSize = 20
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Parent = Header
+
+-- Nút thu nhỏ (-)
+local MinBtn = Instance.new("TextButton")
+MinBtn.Size = UDim2.new(0, 30, 1, 0)
+MinBtn.Position = UDim2.new(1, -60, 0, 0)
+MinBtn.BackgroundTransparency = 1
+MinBtn.Text = "−"
+MinBtn.TextColor3 = Color3.fromRGB(200, 200, 255)
+MinBtn.TextSize = 24
+MinBtn.Font = Enum.Font.GothamBold
+MinBtn.Parent = Header
+
+-- === CONTENT ===
+local Content = Instance.new("Frame")
+Content.Size = UDim2.new(1, -20, 1, -55)
+Content.Position = UDim2.new(0, 10, 0, 50)
+Content.BackgroundTransparency = 1
+Content.Parent = MainFrame
+
+-- === TRẠNG THÁI LED ===
+local StatusFrame = Instance.new("Frame")
+StatusFrame.Size = UDim2.new(0.9, 0, 0, 30)
+StatusFrame.Position = UDim2.new(0.05, 0, 0, 0)
+StatusFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 35)
+StatusFrame.BorderSizePixel = 1
+StatusFrame.BorderColor3 = Color3.fromRGB(0, 200, 255)
+StatusFrame.Parent = Content
+
+local CornerStatus = Instance.new("UICorner")
+CornerStatus.CornerRadius = UDim.new(0, 6)
+CornerStatus.Parent = StatusFrame
+
+local LED = Instance.new("Frame")
+LED.Size = UDim2.new(0, 10, 0, 10)
+LED.Position = UDim2.new(0.03, 0, 0.33, 0)
+LED.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+LED.BorderSizePixel = 0
+LED.Parent = StatusFrame
+
+local CornerLED = Instance.new("UICorner")
+CornerLED.CornerRadius = UDim.new(1, 0)
+CornerLED.Parent = LED
+
+local StatusText = Instance.new("TextLabel")
+StatusText.Size = UDim2.new(0.85, 0, 1, 0)
+StatusText.Position = UDim2.new(0.1, 0, 0, 0)
+StatusText.BackgroundTransparency = 1
+StatusText.Text = "● TRẠNG THÁI: ĐÃ DỪNG"
+StatusText.TextColor3 = Color3.fromRGB(255, 100, 100)
+StatusText.TextScaled = true
+StatusText.Font = Enum.Font.GothamMedium
+StatusText.TextXAlignment = Enum.TextXAlignment.Left
+StatusText.Parent = StatusFrame
+
+-- === NÚT BẬT/TẮT ===
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Size = UDim2.new(0.7, 0, 0, 42)
+ToggleBtn.Position = UDim2.new(0.15, 0, 0.25, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 80)
+ToggleBtn.Text = "▶ KÍCH HOẠT"
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.TextScaled = true
+ToggleBtn.Parent = Content
+
+local CornerBtn = Instance.new("UICorner")
+CornerBtn.CornerRadius = UDim.new(0, 10)
+CornerBtn.Parent = ToggleBtn
+
+-- Glow cho nút
+local BtnGlow = Instance.new("Frame")
+BtnGlow.Size = UDim2.new(1, 6, 1, 6)
+BtnGlow.Position = UDim2.new(0, -3, 0, -3)
+BtnGlow.BackgroundColor3 = Color3.fromRGB(0, 255, 200)
+BtnGlow.BackgroundTransparency = 0.7
+BtnGlow.BorderSizePixel = 0
+BtnGlow.ZIndex = 0
+BtnGlow.Parent = ToggleBtn
+
+local CornerBtnGlow = Instance.new("UICorner")
+CornerBtnGlow.CornerRadius = UDim.new(0, 12)
+CornerBtnGlow.Parent = BtnGlow
+
+-- === BỘ ĐẾM THỜI GIAN ===
+local TimerFrame = Instance.new("Frame")
+TimerFrame.Size = UDim2.new(0.9, 0, 0, 35)
+TimerFrame.Position = UDim2.new(0.05, 0, 0.65, 0)
+TimerFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 30)
+TimerFrame.BorderSizePixel = 1
+TimerFrame.BorderColor3 = Color3.fromRGB(0, 200, 255)
+TimerFrame.Parent = Content
+
+local CornerTimer = Instance.new("UICorner")
+CornerTimer.CornerRadius = UDim.new(0, 6)
+CornerTimer.Parent = TimerFrame
+
+local TimerLabel = Instance.new("TextLabel")
+TimerLabel.Size = UDim2.new(1, 0, 1, 0)
+TimerLabel.BackgroundTransparency = 1
+TimerLabel.Text = "⏱ 00:00:00"
+TimerLabel.TextColor3 = Color3.fromRGB(0, 255, 220)
+TimerLabel.TextScaled = true
+TimerLabel.Font = Enum.Font.GothamBold
+TimerLabel.Parent = TimerFrame
+
+-- === FOOTER ===
+local Footer = Instance.new("TextLabel")
+Footer.Size = UDim2.new(1, 0, 0, 18)
+Footer.Position = UDim2.new(0, 0, 0.92, 0)
+Footer.BackgroundTransparency = 1
+Footer.Text = "c00lkidd • delta • v4.0"
+Footer.TextColor3 = Color3.fromRGB(0, 200, 255)
+Footer.TextScaled = true
+Footer.Font = Enum.Font.Gotham
+Footer.TextTransparency = 0.5
+Footer.Parent = MainFrame
+
+-- === BIẾN ===
+local isEnabled = false
+local minimized = false
+local secondsElapsed = 0
+local clickLock = false
+local jumpThread = nil
+
+-- === HÀM XỬ LÝ NHẢY (TỐI ƯU) ===
+local function DoJump()
+    pcall(function()
+        local char = LocalPlayer.Character
+        if char then
+            local hum = char:FindFirstChild("Humanoid")
+            if hum and hum.FloorMaterial ~= Enum.Material.Air then
+                hum:ChangeState(Enum.HumanoidStateType.Jumping)
+            end
+        end
+    end)
+end
+
+-- === DỪNG HỆ THỐNG ===
+local function StopSystem()
+    isEnabled = false
+    if jumpThread then
+        task.cancel(jumpThread)
+        jumpThread = nil
+    end
+    ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 180, 80)
+    ToggleBtn.Text = "▶ KÍCH HOẠT"
+    LED.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+    StatusText.Text = "● TRẠNG THÁI: ĐÃ DỪNG"
+    StatusText.TextColor3 = Color3.fromRGB(255, 100, 100)
+    print("[c00lkidd] Đã dừng AFK.")
+end
+
+-- === KHỞI ĐỘNG ===
+local function StartSystem()
+    if isEnabled then
+        StopSystem()
+        task.wait(0.1)
+    end
+    
+    isEnabled = true
+    ToggleBtn.BackgroundColor3 = Color3.fromRGB(200, 30, 30)
+    ToggleBtn.Text = "■ DỪNG"
+    LED.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+    StatusText.Text = "● TRẠNG THÁI: ĐANG CHẠY"
+    StatusText.TextColor3 = Color3.fromRGB(0, 255, 150)
+    secondsElapsed = 0
+    
+    print("[c00lkidd] Khởi động AFK.")
+    
+    -- Luồng chính
+    jumpThread = task.spawn(function()
+        while isEnabled do
+            task.wait(1)
+            secondsElapsed = secondsElapsed + 1
+            
+            local hrs = math.floor(secondsElapsed / 3600)
+            local mins = math.floor((secondsElapsed % 3600) / 60)
+            local secs = secondsElapsed % 60
+            TimerLabel.Text = string.format("⏱ %02d:%02d:%02d", hrs, mins, secs)
+            
+            DoJump()
+        end
+    end)
+end
+
+-- === SỰ KIỆN NÚT ===
+ToggleBtn.MouseButton1Click:Connect(function()
+    if clickLock then return end
+    clickLock = true
+    task.spawn(function() task.wait(0.3); clickLock = false end)
+    
+    if isEnabled then
+        StopSystem()
+    else
+        StartSystem()
+    end
+end)
+
+-- === NÚT ĐÓNG ===
+CloseBtn.MouseButton1Click:Connect(function()
+    StopSystem()
+    ScreenGui:Destroy()
+end)
+
+-- === NÚT THU NHỎ ===
+MinBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        MainFrame.Size = UDim2.new(0, 320, 0, 45)
+        Content.Visible = false
+        Footer.Visible = false
+        MinBtn.Text = "+"
+    else
+        MainFrame.Size = UDim2.new(0, 320, 0, 220)
+        Content.Visible = true
+        Footer.Visible = true
+        MinBtn.Text = "−"
+    end
+end)
+
+-- === RESET KHI RESPAWN ===
+LocalPlayer.CharacterAdded:Connect(function()
+    task.wait(0.5)
+    if isEnabled then
+        StopSystem()
+        task.wait(0.2)
+        StartSystem()
+    end
+end)
+
+-- === THÔNG BÁO ===
+print("[c00lkidd] Menu AFK đã sẵn sàng! Kéo thả để di chuyển.")
