@@ -1,0 +1,337 @@
+-- Script Fling Control - Theme c00lkidd CẦU VỒNG (Rainbow Header + Text)
+-- Header và chữ chuyển màu liên tục, hiệu ứng neon cực đẹp
+
+local Players = game:GetService("Players")
+local UIS = game:GetService("UserInputService")
+local Workspace = game:GetService("Workspace")
+local Debris = game:GetService("Debris")
+local RunService = game:GetService("RunService")
+local LocalPlayer = Players.LocalPlayer
+
+-- === XÓA GUI CŨ ===
+for _, gui in ipairs(LocalPlayer.PlayerGui:GetChildren()) do
+    if gui.Name == "c00lkidd_Fling" then gui:Destroy() end
+end
+
+-- === TẠO GUI ===
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "c00lkidd_Fling"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+
+-- === MAIN FRAME ===
+local MainFrame = Instance.new("Frame")
+MainFrame.Size = UDim2.new(0, 360, 0, 260)
+MainFrame.Position = UDim2.new(0.5, -180, 0.4, -130)
+MainFrame.BackgroundColor3 = Color3.fromRGB(8, 8, 16)
+MainFrame.BackgroundTransparency = 0.1
+MainFrame.BorderSizePixel = 0
+MainFrame.Active = true
+MainFrame.Draggable = true
+MainFrame.ClipsDescendants = true
+MainFrame.Parent = ScreenGui
+
+-- Bo góc
+local Corner = Instance.new("UICorner")
+Corner.CornerRadius = UDim.new(0, 14)
+Corner.Parent = MainFrame
+
+-- === HEADER CẦU VỒNG (nền đổi màu) ===
+local Header = Instance.new("Frame")
+Header.Size = UDim2.new(1, 0, 0, 50)
+Header.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+Header.BackgroundTransparency = 0.2
+Header.Parent = MainFrame
+
+-- Bo góc cho header (chỉ bo trên)
+local HeaderCorner = Instance.new("UICorner")
+HeaderCorner.CornerRadius = UDim.new(0, 14)
+HeaderCorner.Parent = Header
+
+-- === TIÊU ĐỀ CẦU VỒNG ===
+local Title = Instance.new("TextLabel")
+Title.Size = UDim2.new(1, -70, 1, 0)
+Title.Position = UDim2.new(0, 10, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "🌀 C00LKIDD FLING"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextXAlignment = Enum.TextXAlignment.Left
+Title.Font = Enum.Font.GothamBold
+Title.TextScaled = true
+Title.Parent = Header
+
+-- Nút đóng
+local CloseBtn = Instance.new("TextButton")
+CloseBtn.Size = UDim2.new(0, 30, 1, 0)
+CloseBtn.Position = UDim2.new(1, -30, 0, 0)
+CloseBtn.BackgroundTransparency = 1
+CloseBtn.Text = "✕"
+CloseBtn.TextColor3 = Color3.fromRGB(255, 80, 80)
+CloseBtn.TextSize = 20
+CloseBtn.Font = Enum.Font.GothamBold
+CloseBtn.Parent = Header
+
+-- Nút thu nhỏ
+local MinBtn = Instance.new("TextButton")
+MinBtn.Size = UDim2.new(0, 30, 1, 0)
+MinBtn.Position = UDim2.new(1, -60, 0, 0)
+MinBtn.BackgroundTransparency = 1
+MinBtn.Text = "−"
+MinBtn.TextColor3 = Color3.fromRGB(200, 200, 255)
+MinBtn.TextSize = 24
+MinBtn.Font = Enum.Font.GothamBold
+MinBtn.Parent = Header
+
+-- === CONTENT ===
+local Content = Instance.new("Frame")
+Content.Size = UDim2.new(1, -20, 1, -60)
+Content.Position = UDim2.new(0, 10, 0, 55)
+Content.BackgroundTransparency = 1
+Content.Parent = MainFrame
+
+-- === TRẠNG THÁI LED ===
+local StatusFrame = Instance.new("Frame")
+StatusFrame.Size = UDim2.new(0.9, 0, 0, 32)
+StatusFrame.Position = UDim2.new(0.05, 0, 0, 0)
+StatusFrame.BackgroundColor3 = Color3.fromRGB(15, 15, 35)
+StatusFrame.BorderSizePixel = 0
+StatusFrame.Parent = Content
+
+local CornerStatus = Instance.new("UICorner")
+CornerStatus.CornerRadius = UDim.new(0, 8)
+CornerStatus.Parent = StatusFrame
+
+local LED = Instance.new("Frame")
+LED.Size = UDim2.new(0, 14, 0, 14)
+LED.Position = UDim2.new(0.03, 0, 0.28, 0)
+LED.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+LED.BorderSizePixel = 0
+LED.Parent = StatusFrame
+
+local CornerLED = Instance.new("UICorner")
+CornerLED.CornerRadius = UDim.new(1, 0)
+CornerLED.Parent = LED
+
+local LEDGlow = Instance.new("Frame")
+LEDGlow.Size = UDim2.new(1, 8, 1, 8)
+LEDGlow.Position = UDim2.new(0, -4, 0, -4)
+LEDGlow.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+LEDGlow.BackgroundTransparency = 0.6
+LEDGlow.BorderSizePixel = 0
+LEDGlow.ZIndex = 0
+LEDGlow.Parent = LED
+
+local CornerLEDGlow = Instance.new("UICorner")
+CornerLEDGlow.CornerRadius = UDim.new(1, 0)
+CornerLEDGlow.Parent = LEDGlow
+
+local StatusText = Instance.new("TextLabel")
+StatusText.Size = UDim2.new(0.85, 0, 1, 0)
+StatusText.Position = UDim2.new(0.1, 0, 0, 0)
+StatusText.BackgroundTransparency = 1
+StatusText.Text = "● TRẠNG THÁI: ĐÃ DỪNG"
+StatusText.TextColor3 = Color3.fromRGB(255, 100, 100)
+StatusText.TextScaled = true
+StatusText.Font = Enum.Font.GothamMedium
+StatusText.TextXAlignment = Enum.TextXAlignment.Left
+StatusText.Parent = StatusFrame
+
+-- === THANH VẬN TỐC ===
+local SpeedFrame = Instance.new("Frame")
+SpeedFrame.Size = UDim2.new(0.9, 0, 0, 45)
+SpeedFrame.Position = UDim2.new(0.05, 0, 0.2, 0)
+SpeedFrame.BackgroundColor3 = Color3.fromRGB(10, 10, 30)
+SpeedFrame.BorderSizePixel = 0
+SpeedFrame.Parent = Content
+
+local CornerSpeed = Instance.new("UICorner")
+CornerSpeed.CornerRadius = UDim.new(0, 8)
+CornerSpeed.Parent = SpeedFrame
+
+local SpeedLabel = Instance.new("TextLabel")
+SpeedLabel.Size = UDim2.new(0.4, 0, 1, 0)
+SpeedLabel.Position = UDim2.new(0.02, 0, 0, 0)
+SpeedLabel.BackgroundTransparency = 1
+SpeedLabel.Text = "⚡ TỐC ĐỘ: 850"
+SpeedLabel.TextColor3 = Color3.fromRGB(0, 255, 220)
+SpeedLabel.TextScaled = true
+SpeedLabel.Font = Enum.Font.GothamBold
+SpeedLabel.TextXAlignment = Enum.TextXAlignment.Left
+SpeedLabel.Parent = SpeedFrame
+
+local SpeedBox = Instance.new("TextBox")
+SpeedBox.Size = UDim2.new(0.35, 0, 0.7, 0)
+SpeedBox.Position = UDim2.new(0.6, 0, 0.15, 0)
+SpeedBox.BackgroundColor3 = Color3.fromRGB(30, 30, 60)
+SpeedBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+SpeedBox.Text = "850"
+SpeedBox.PlaceholderText = "Vận tốc"
+SpeedBox.TextScaled = true
+SpeedBox.Font = Enum.Font.Gotham
+SpeedBox.Parent = SpeedFrame
+
+local CornerSpeedBox = Instance.new("UICorner")
+CornerSpeedBox.CornerRadius = UDim.new(0, 6)
+CornerSpeedBox.Parent = SpeedBox
+
+-- === NÚT BẬT/TẮT ===
+local ToggleBtn = Instance.new("TextButton")
+ToggleBtn.Size = UDim2.new(0.7, 0, 0, 50)
+ToggleBtn.Position = UDim2.new(0.15, 0, 0.55, 0)
+ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 80)
+ToggleBtn.Text = "▶ KÍCH HOẠT FLING"
+ToggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleBtn.Font = Enum.Font.GothamBold
+ToggleBtn.TextScaled = true
+ToggleBtn.Parent = Content
+
+local CornerBtn = Instance.new("UICorner")
+CornerBtn.CornerRadius = UDim.new(0, 12)
+CornerBtn.Parent = ToggleBtn
+
+-- === FOOTER ===
+local Footer = Instance.new("TextLabel")
+Footer.Size = UDim2.new(1, 0, 0, 18)
+Footer.Position = UDim2.new(0, 0, 0.92, 0)
+Footer.BackgroundTransparency = 1
+Footer.Text = "c00lkidd • fling • rainbow v5.0"
+Footer.TextColor3 = Color3.fromRGB(200, 200, 255)
+Footer.TextScaled = true
+Footer.Font = Enum.Font.Gotham
+Footer.TextTransparency = 0.4
+Footer.Parent = MainFrame
+
+-- === BIẾN ===
+local isEnabled = true
+local minimized = false
+local clickLock = false
+local hue = 0
+
+-- === HÀM CẬP NHẬT UI ===
+local function UpdateUI()
+    if isEnabled then
+        ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 200, 80)
+        ToggleBtn.Text = "▶ FLING: ON"
+        LED.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+        LEDGlow.BackgroundColor3 = Color3.fromRGB(0, 255, 100)
+        StatusText.Text = "● TRẠNG THÁI: ĐANG BẬT"
+        StatusText.TextColor3 = Color3.fromRGB(0, 255, 150)
+    else
+        ToggleBtn.BackgroundColor3 = Color3.fromRGB(200, 30, 30)
+        ToggleBtn.Text = "■ FLING: OFF"
+        LED.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        LEDGlow.BackgroundColor3 = Color3.fromRGB(255, 50, 50)
+        StatusText.Text = "● TRẠNG THÁI: ĐÃ TẮT"
+        StatusText.TextColor3 = Color3.fromRGB(255, 100, 100)
+    end
+end
+
+-- === HIỆU ỨNG CẦU VỒNG CHO HEADER VÀ CHỮ ===
+RunService.Heartbeat:Connect(function()
+    hue = (hue + 0.003) % 1
+    local color = Color3.fromHSV(hue, 1, 1)
+    
+    -- Đổi màu nền Header
+    Header.BackgroundColor3 = color
+    
+    -- Đổi màu chữ Title
+    Title.TextColor3 = color
+    
+    -- Đổi màu chữ Footer
+    local footerHue = (hue + 0.3) % 1
+    Footer.TextColor3 = Color3.fromHSV(footerHue, 0.8, 1)
+    
+    -- Đổi màu chữ SpeedLabel
+    local speedHue = (hue + 0.5) % 1
+    SpeedLabel.TextColor3 = Color3.fromHSV(speedHue, 0.9, 1)
+end)
+
+-- === XỬ LÝ FLING ===
+Workspace.ChildAdded:Connect(function(child)
+    if child.Name == "GrabParts" then
+        local grabPart = child:FindFirstChild("GrabPart")
+        if not grabPart then return end
+        
+        local weld = grabPart:FindFirstChild("WeldConstraint")
+        if not weld or not weld.Part1 then return end
+        
+        local targetPart = weld.Part1
+        local bodyVelocity = Instance.new("BodyVelocity")
+        bodyVelocity.Parent = targetPart
+        
+        child:GetPropertyChangedSignal("Parent"):Connect(function()
+            if not child.Parent then
+                if isEnabled then
+                    local speed = tonumber(SpeedBox.Text) or 850
+                    if speed < 100 then speed = 100 end
+                    if speed > 5000 then speed = 5000 end
+                    
+                    bodyVelocity.MaxForce = Vector3.new(1e9, 1e9, 1e9)
+                    bodyVelocity.Velocity = Workspace.CurrentCamera.CFrame.LookVector * speed
+                else
+                    bodyVelocity.MaxForce = Vector3.zero
+                end
+                Debris:AddItem(bodyVelocity, 1)
+            end
+        end)
+    end
+end)
+
+-- === SỰ KIỆN NÚT ===
+ToggleBtn.MouseButton1Click:Connect(function()
+    if clickLock then return end
+    clickLock = true
+    task.spawn(function() task.wait(0.3); clickLock = false end)
+    
+    isEnabled = not isEnabled
+    UpdateUI()
+end)
+
+-- === NÚT ĐÓNG ===
+CloseBtn.MouseButton1Click:Connect(function()
+    ScreenGui:Destroy()
+end)
+
+-- === NÚT THU NHỎ ===
+MinBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    if minimized then
+        MainFrame.Size = UDim2.new(0, 360, 0, 50)
+        Content.Visible = false
+        Footer.Visible = false
+        MinBtn.Text = "+"
+    else
+        MainFrame.Size = UDim2.new(0, 360, 0, 260)
+        Content.Visible = true
+        Footer.Visible = true
+        MinBtn.Text = "−"
+    end
+end)
+
+-- === CẬP NHẬT TỐC ĐỘ ===
+SpeedBox.FocusLost:Connect(function()
+    local val = tonumber(SpeedBox.Text)
+    if not val or val < 100 then
+        SpeedBox.Text = "100"
+    elseif val > 5000 then
+        SpeedBox.Text = "5000"
+    end
+    SpeedLabel.Text = "⚡ TỐC ĐỘ: " .. SpeedBox.Text
+end)
+
+-- === HIỆU ỨNG HOVER ===
+ToggleBtn.MouseEnter:Connect(function()
+    if isEnabled then
+        ToggleBtn.BackgroundColor3 = Color3.fromRGB(0, 220, 100)
+    else
+        ToggleBtn.BackgroundColor3 = Color3.fromRGB(220, 40, 40)
+    end
+end)
+
+ToggleBtn.MouseLeave:Connect(function()
+    UpdateUI()
+end)
+
+-- === KHỞI TẠO UI ===
+UpdateUI()
+print("[c00lkidd] Fling menu CẦU VỒNG đã sẵn sàng! Header và chữ đổi màu liên tục.")
